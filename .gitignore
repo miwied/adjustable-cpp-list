@@ -1,3 +1,4 @@
 .vs*
 list/x64/Debug*
 list/x64/Debug/*
+x64/Debug/*
