@@ -1,6 +1,8 @@
 #include <iostream>
-#include <new>
+#include <windows.h>
 using namespace std;
+
+HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
 class LightObject
 {
@@ -53,39 +55,57 @@ class List
         }
         void DrawList()
         {
+            cout << "^" << endl;
             for (int i = 1; i < (rows + 1); i++)
             {
                 cout << "R" << i << ": " << rowContent[i-1] << endl;
             }
+            cout << "v" << endl;
         }
 };
 
 List lights;
 
+string commandList[7] =
+{
+    "up",
+    "down",
+    "draw",
+    "clearList",
+    "setRows",
+    "setContent",
+    "help"
+};
+
 void command()
 {
     string inputCommand = "";
     cout << "please type in your command:" << endl;
+    SetConsoleTextAttribute(hConsole, 3);
     cin >> inputCommand;
-    if (inputCommand == "/up")
+    SetConsoleTextAttribute(hConsole, 7);
+
+    cout << endl;
+
+    if (inputCommand == "up")
     {
         return;
     }
-    if (inputCommand == "/down")
+    if (inputCommand == "down")
     {
         return;
     }
-    if (inputCommand == "/draw")
+    if (inputCommand == "draw")
     {
         lights.DrawList();
         return;
     }
-    if (inputCommand == "/clearList")
+    if (inputCommand == "clearList")
     {
         lights.clearRowContent();
         return;
     }
-    if (inputCommand == "/setRows")
+    if (inputCommand == "setRows")
     {
         int numberofrows;
         cout << "type number of rows: ";
@@ -94,7 +114,7 @@ void command()
         lights.clearRowContent();
         return;
     }
-    if (inputCommand == "/setContent")
+    if (inputCommand == "setContent")
     {
         int row;
         string content;
@@ -106,12 +126,27 @@ void command()
         lights.clearRowContent();
         return;
     }
+    if (inputCommand == "help")
+    {
+        cout << "here are the valid commands:" << endl;
+        SetConsoleTextAttribute(hConsole, 14);
+        for (int i = 0; i < ((sizeof(commandList)/sizeof(commandList[0]))); i++)
+        {
+            cout << commandList[i] << endl;
+        }
+        SetConsoleTextAttribute(hConsole, 7);
+        return;
+    }
+    SetConsoleTextAttribute(hConsole, 12);
+    cout << "ivalid command" << endl;
+    SetConsoleTextAttribute(hConsole, 7);
 }
 
 int pause;
 
 int main()
 {
+    SetConsoleTextAttribute(hConsole, 7);
     lights.setRows(8);
     lights.setRowContent(5, "Test");
     while (true)
