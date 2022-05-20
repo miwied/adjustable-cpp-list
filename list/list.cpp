@@ -1,32 +1,14 @@
 #include <iostream>
+#include <cstdlib>
+#include<vector>
+#include<string>
 #include <windows.h>
 using namespace std;
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-class LightObject
-{
-    private:
-        string name;
-        bool state;
-    public:
-        void setName(string n)
-        {
-            name = n;
-        }
-        string getName()
-        {
-            return name;
-        }
-        void setState(bool s)
-        {
-            state = s;
-        }
-        bool getState()
-        {
-            return state;
-        }
-};
+short defaultTextColor = 7;
+
 
 class List
 {
@@ -34,19 +16,19 @@ class List
         int rows = 0;
         string rowContent[8];
     public:
-        void setRows(int r)
+        void SetRows(int r)
         {
             rows = r;
         }
-        int getRows()
+        int GetRows()
         {
             return rows;
         }
-        void setRowContent(int rowNr, string content)
+        void SetRowContent(int rowNr, string content)
         {
             rowContent[rowNr-1] = content;
         }
-        void clearRowContent()
+        void ClearRowContent()
         {
             for (int i = 0; i < rows; i++)
             {
@@ -64,17 +46,32 @@ class List
         }
 };
 
-List lights;
+List list;
 
-string commandList[7] =
+string commands[9] =
 {
+    "help",
+    "quit",
     "up",
     "down",
     "draw",
-    "clearList",
+    "clear",
     "setRows",
     "setContent",
-    "help"
+    "create"
+};
+
+enum commandsMapping
+{
+    help,
+    quit,
+    up,
+    down,
+    draw,
+    clear,
+    setRows,
+    setContent,
+    create
 };
 
 void command()
@@ -87,68 +84,82 @@ void command()
 
     cout << endl;
 
-    if (inputCommand == "up")
+    if (inputCommand == commands[up])
     {
         return;
     }
-    if (inputCommand == "down")
+    if (inputCommand == commands[down])
     {
         return;
     }
-    if (inputCommand == "draw")
+    if (inputCommand == commands[draw])
     {
-        lights.DrawList();
+        list.DrawList();
         return;
     }
-    if (inputCommand == "clearList")
+    if (inputCommand == commands[clear])
     {
-        lights.clearRowContent();
+        list.ClearRowContent();
         return;
     }
-    if (inputCommand == "setRows")
+    if (inputCommand == commands[setRows])
     {
         int numberofrows;
-        cout << "type number of rows: ";
+        cout << "number of rows: ";
         cin >> numberofrows;
-        lights.setRows(numberofrows);
-        lights.clearRowContent();
+        list.SetRows(numberofrows);
+        list.ClearRowContent();
         return;
     }
-    if (inputCommand == "setContent")
+    if (inputCommand == commands[setContent])
     {
         int row;
         string content;
-        cout << "type row number: ";
+        cout << "row number: ";
         cin >> row;
-        cout << "type content: ";
-        cin >> content;
-        lights.setRowContent(row, content);
-        lights.clearRowContent();
+        cout << "content: ";
+        /*cin >> content;*/
+        cin.ignore();
+        getline(cin, content);
+        list.SetRowContent(row, content);
         return;
     }
-    if (inputCommand == "help")
+    if (inputCommand == commands[help])
     {
         cout << "here are all valid commands:" << endl;
         SetConsoleTextAttribute(hConsole, 14);
-        for (int i = 0; i < ((sizeof(commandList)/sizeof(commandList[0]))); i++)
+        for (int i = 0; i < ((sizeof(commands)/sizeof(commands[0]))); i++)
         {
-            cout << commandList[i] << endl;
+            cout << commands[i] << endl;
         }
-        SetConsoleTextAttribute(hConsole, 7);
+        SetConsoleTextAttribute(hConsole, defaultTextColor);
+        return;
+    }
+    if (inputCommand == commands[quit])
+    {
+        SetConsoleTextAttribute(hConsole, 10);
+        cout << "press any key to close console" << endl;
+        SetConsoleTextAttribute(hConsole, defaultTextColor);
+        exit(1);
+        return;
+    }
+    if (inputCommand == commands[create])
+    {
         return;
     }
     SetConsoleTextAttribute(hConsole, 12);
     cout << "'" << inputCommand << "' " << "is a invalid command" << endl;
-    SetConsoleTextAttribute(hConsole, 7);
+    SetConsoleTextAttribute(hConsole, defaultTextColor);
 }
 
 int pause;
 
 int main()
 {
-    SetConsoleTextAttribute(hConsole, 7);
-    lights.setRows(8);
-    lights.setRowContent(5, "Test");
+    SetConsoleTextAttribute(hConsole, defaultTextColor);
+    list.SetRows(8);
+    list.SetRowContent(5, "Test");
+
     while (true)
     {
         command();
