@@ -138,7 +138,7 @@ void command()
         return;
     }
     SetConsoleTextAttribute(hConsole, 12);
-    cout << "ivalid command" << endl;
+    cout << "invalid command" << endl;
     SetConsoleTextAttribute(hConsole, 7);
 }
 
