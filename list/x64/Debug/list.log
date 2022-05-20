@@ -1,2 +1,2 @@
 ﻿  list.cpp
-  list.vcxproj -> C:\prj\customizable-cpp-list\x64\Debug\list.exe
+LINK : fatal error LNK1104: Datei "C:\prj\customizable-cpp-list\x64\Debug\list.exe" kann nicht geöffnet werden.

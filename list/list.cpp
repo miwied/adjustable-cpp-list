@@ -55,12 +55,12 @@ class List
         }
         void DrawList()
         {
-            cout << "^" << endl;
+            cout << "/\\" << endl;
             for (int i = 1; i < (rows + 1); i++)
             {
                 cout << "R" << i << ": " << rowContent[i-1] << endl;
             }
-            cout << "v" << endl;
+            cout << "\\/" << endl;
         }
 };
 
@@ -128,7 +128,7 @@ void command()
     }
     if (inputCommand == "help")
     {
-        cout << "here are the valid commands:" << endl;
+        cout << "here are all valid commands:" << endl;
         SetConsoleTextAttribute(hConsole, 14);
         for (int i = 0; i < ((sizeof(commandList)/sizeof(commandList[0]))); i++)
         {
@@ -138,7 +138,7 @@ void command()
         return;
     }
     SetConsoleTextAttribute(hConsole, 12);
-    cout << "invalid command" << endl;
+    cout << "'" << inputCommand << "' " << "is a invalid command" << endl;
     SetConsoleTextAttribute(hConsole, 7);
 }
 
