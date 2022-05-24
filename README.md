@@ -38,8 +38,8 @@ This small console application I wrote demonstrates the useage of a std::list in
 |--|--|
 | ![clear list](images/clear_list.png) | ![clear list](images/add_row.png) |
 
-| help | |
-|--|--|
-| ![all commands](images/all_commands.png) |  |
+| help |
+|--|
+| ![all commands](images/all_commands.png) |  
 
 
