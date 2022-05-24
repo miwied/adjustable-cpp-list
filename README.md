@@ -4,8 +4,8 @@ This small console application I wrote demonstrates the useage of a std::list in
 
 ## features
  - navigable list
- - adjustable row-display size
- - current- and maximum page number display, which adjusts according to row-display size and list size
+ - adjustable row display size
+ - current- and maximum page number display, which adjusts according to row display size and list size
  - invalid command input notification 
  - colorized text in order to improve the overview
  - editable rows
