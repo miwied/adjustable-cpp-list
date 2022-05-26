@@ -238,6 +238,7 @@ void commandHandling()
     if (inputCommand == commands[addRow])
     {
         bool loop = true;
+        int previousMaxPage = demoList.MaxPageNr();
         while (loop)
         {
             string content;
@@ -246,6 +247,17 @@ void commandHandling()
             getline(cin, content);
             demoList.AddRow(content);
             demoList.DrawList();
+            int currentMaxPage = demoList.MaxPageNr();
+            if (currentMaxPage > previousMaxPage)
+            {
+                int maxPage = demoList.MaxPageNr();
+                int currentStartingRow = demoList.GetStartingRow();
+                int currentRenderLimit = demoList.GetRowRenderLimit();
+                int currentPage = demoList.GetPage();
+                demoList.SetStartingRow(currentStartingRow + currentRenderLimit);
+                demoList.SetPage(currentPage + 1);
+                demoList.DrawList();
+            }
             cout << endl;
 
             string input;
