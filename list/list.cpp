@@ -97,12 +97,12 @@ public:
     }
     int MaxPageNr()
     {
-        double res = list.size() / rowRenderLimit;
-        if (res <= 0)
+        double result = list.size() / rowRenderLimit;
+        if (result <= 0)
         {
-            res = 1;
+            result = 1;
         }
-        return ceil(res);
+        return ceil(result);
     }
     void UpdateFirstRowIndex()
     {
@@ -150,7 +150,7 @@ public:
     {
         ResetParams();
         ClearList();
-        //just some colors as demo data
+        //just some demo data
         list.push_back("red");
         list.push_back("green");
         list.push_back("blue");
@@ -168,11 +168,16 @@ public:
     {
         int row;
         string content;
+        SetConsoleTextColor(defaultTextColor);
         cout << "row number: ";
+        SetConsoleTextColor(blue);
         cin >> row;
+        SetConsoleTextColor(defaultTextColor);
         cout << "content: ";
+        SetConsoleTextColor(blue);
         cin.ignore();
         getline(cin, content);
+        SetConsoleTextColor(defaultTextColor);
         std::list<std::string>::iterator iter = list.begin();
         advance(iter, (row - 1));
         if ((row - 1) <= list.size())
@@ -189,10 +194,13 @@ public:
         while (loop)
         {
             string content;
+            SetConsoleTextColor(defaultTextColor);
             cout << "content: ";
+            SetConsoleTextColor(blue);
             cin.ignore();
             getline(cin, content);
             list.push_back(content);
+            SetConsoleTextColor(defaultTextColor);
             DrawList();
             int currentMaxPage = MaxPageNr();
             if (currentMaxPage > previousMaxPage)
@@ -214,17 +222,16 @@ public:
             cout << endl;
         }
     }
-    void SetRowRenderLimit(int rows)
-    {
-        ResetParams();
-        rowRenderLimit = rows;
-    }
     void SetViewRange()
     {
         int numberofrows;
+        SetConsoleTextColor(defaultTextColor);
         cout << "number of rows: ";
+        SetConsoleTextColor(blue);
         cin >> numberofrows;
-        SetRowRenderLimit(numberofrows);
+        SetConsoleTextColor(defaultTextColor);
+        ResetParams();
+        rowRenderLimit = numberofrows;
         DrawList();
     }
     void previousPage()
@@ -247,7 +254,9 @@ public:
     }
 };
 
-void commandHandling(CustomizableList list1)
+CustomizableList demoList;
+
+void commandHandling()
 {
     string inputCommand = "";
     PrintConsoleText("please type in your command:", defaultTextColor);
@@ -258,43 +267,43 @@ void commandHandling(CustomizableList list1)
 
     if (inputCommand == commands[up])
     {
-        list1.previousPage();
+        demoList.previousPage();
         return;
     }
     if (inputCommand == commands[down])
     {
-        list1.nextPage();
+        demoList.nextPage();
         return;
     }
     if (inputCommand == commands[draw])
     {
-        list1.ResetParams();
-        list1.DrawList();
+        demoList.ResetParams();
+        demoList.DrawList();
         return;
     }
     if (inputCommand == commands[clearList])
     {
-        list1.ClearList();
+        demoList.ClearList();
         return;
     }
     if (inputCommand == commands[setViewRange])
     {
-        list1.SetViewRange();
+        demoList.SetViewRange();
         return;
     }
     if (inputCommand == commands[addRow])
     {
-        list1.AddRow();
+        demoList.AddRow();
         return;
     }
     if (inputCommand == commands[editRow])
     {
-        list1.EditRow();
+        demoList.EditRow();
         return;
     }
     if (inputCommand == commands[loadDemoData])
     {
-        list1.LoadDemoData();
+        demoList.LoadDemoData();
         return;
     }
     if (inputCommand == commands[help])
@@ -314,15 +323,13 @@ void commandHandling(CustomizableList list1)
 
 int main()
 {
-    CustomizableList demoList;
-
     demoList.LoadDemoData();
     demoList.DrawList();
     cout << endl;
 
     while (true)
     {
-        commandHandling(demoList);
+        commandHandling();
         cout << endl;
     }
 }
