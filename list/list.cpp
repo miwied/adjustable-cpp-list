@@ -5,23 +5,90 @@
 using namespace std;
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-short defaultTextColor = 7;
+// colors for console text
+short defaultTextColor = 7; // (grey)
+short red = 12;
+short yellow = 14;
+short blue = 3;
+short green = 10;
 
-void clearConsole() 
+string commands[10] =
+{
+    "help",
+    "draw",
+    "up",
+    "down",
+    "clearList",
+    "setViewRange",
+    "addRow",
+    "editRow",
+    "loadDemoData",
+    "quit"
+};
+enum commandsMapping
+{
+    help,
+    draw,
+    up,
+    down,
+    clearList,
+    setViewRange,
+    addRow,
+    editRow,
+    loadDemoData,
+    quit
+};
+
+void SetConsoleTextColor(int color)
+{
+    SetConsoleTextAttribute(hConsole, color);
+}
+
+void PrintConsoleText(string text, int color)
+{
+    SetConsoleTextColor(color);
+    cout << text << endl;
+    SetConsoleTextColor(defaultTextColor);
+}
+
+void ClearConsole()
 {
     system("cls");
+}
+
+void CloseConsole()
+{
+    PrintConsoleText("press any key to close console", green);
+    exit(1);
+}
+
+void PrintVailidCommands()
+{
+    ClearConsole();
+    PrintConsoleText("here are all valid commands:", defaultTextColor);
+    for (int i = 0; i < ((sizeof(commands) / sizeof(commands[0]))); i++)
+    {
+        PrintConsoleText(commands[i], yellow);
+    }
 }
 
 class CustomizableList
 {
 private:
     list<string> list;
-    //default parameters
-    double rowRenderLimit = 4;
-    int startingRow = 0;
-    int page = 1;
-    int rowIndex = 1;
+    double rowRenderLimit;
+    int startingRow;
+    int page;
+    int rowIndex;
 public:
+    CustomizableList()
+    {
+        //default parameters
+        rowRenderLimit = ceil(4);
+        startingRow = 0;
+        page = 1;
+        rowIndex = 1;
+    }
     void ResetParams()
     {
         startingRow = 0;
@@ -37,76 +104,13 @@ public:
         }
         return ceil(res);
     }
-    void SetPage(int p)
-    {
-        page = p;
-    }
-    int GetPage()
-    {
-        return page;
-    }
-    void SetRowIndex(int r)
-    {
-        rowIndex = r;
-    }
     void UpdateFirstRowIndex()
     {
         rowIndex = ((page - 1) * rowRenderLimit) + 1;
     }
-    int GetRowIndex()
-    {
-        return rowIndex;
-    }
-    void SetStartingRow(int r)
-    {
-        startingRow = r;
-    }
-    int GetStartingRow()
-    {
-        return startingRow;
-    }
-    void SetRowRenderLimit(int r)
-    {
-        rowRenderLimit = r;
-    }
-    int GetRowRenderLimit()
-    {
-        return rowRenderLimit;
-    }
-    void SetDemoData()
-    {
-        ResetParams();
-        //just some colors as demo data
-        list.push_back("red");
-        list.push_back("green");
-        list.push_back("blue");
-        list.push_back("yellow");
-        list.push_back("brown");
-        list.push_back("purple");
-        list.push_back("orange");
-        list.push_back("grey");
-        list.push_back("black");
-        list.push_back("white");
-        list.push_back("pink");
-    }
-    void SetRowContent(int rowNr, string content)
-    {
-        std::list<std::string>::iterator iter = list.begin();
-        advance(iter, (rowNr - 1));
-        if ((rowNr - 1) <= list.size())
-        {
-             list.insert(iter, content);
-             list.erase(iter);
-        }
-    }
-    void ClearList()
-    {
-        ResetParams();
-        list.clear();
-    }
     void DrawList()
     {
-        clearConsole();
+        ClearConsole();
         cout << "page: " << page << "/" << to_string(MaxPageNr()) << endl;
         cout << endl;
 
@@ -136,127 +140,66 @@ public:
 
         cout << "\\/" << endl;
     }
-    void AddRow(string content)
-    {
-        list.push_back(content);
-    }
-    void setRowRenderLimit(int rows)
+    void ClearList()
     {
         ResetParams();
-        rowRenderLimit = rows;
+        list.clear();
+        DrawList();
     }
-};
-
-CustomizableList demoList;
-
-string commands[10] =
-{
-    "help",
-    "draw",
-    "up",
-    "down",
-    "clearList",
-    "setViewRange",
-    "addRow",
-    "editRow",
-    "loadDemoData",
-    "quit"
-};
-
-enum commandsMapping
-{
-    help,
-    draw,
-    up,
-    down,
-    clearList,
-    setViewRange,
-    addRow,
-    editRow,
-    loadDemoData,
-    quit
-};
-
-void commandHandling()
-{
-    string inputCommand = "";
-    SetConsoleTextAttribute(hConsole, defaultTextColor);
-    cout << "please type in your command:" << endl;
-    SetConsoleTextAttribute(hConsole, 3);
-    cin >> inputCommand;
-    SetConsoleTextAttribute(hConsole, 7);
-    cout << endl;
-
-    if (inputCommand == commands[up])
+    void LoadDemoData()
     {
-        int currentStartingRow = demoList.GetStartingRow();
-        int currentRenderLimit = demoList.GetRowRenderLimit();
-        int currentPage = demoList.GetPage();
-        if (currentPage > 1)
+        ResetParams();
+        ClearList();
+        //just some colors as demo data
+        list.push_back("red");
+        list.push_back("green");
+        list.push_back("blue");
+        list.push_back("yellow");
+        list.push_back("brown");
+        list.push_back("purple");
+        list.push_back("orange");
+        list.push_back("grey");
+        list.push_back("black");
+        list.push_back("white");
+        list.push_back("pink");
+        DrawList();
+    }
+    void EditRow()
+    {
+        int row;
+        string content;
+        cout << "row number: ";
+        cin >> row;
+        cout << "content: ";
+        cin.ignore();
+        getline(cin, content);
+        std::list<std::string>::iterator iter = list.begin();
+        advance(iter, (row - 1));
+        if ((row - 1) <= list.size())
         {
-            demoList.SetStartingRow(currentStartingRow - currentRenderLimit);
-            demoList.SetPage(currentPage - 1);
+            list.insert(iter, content);
+            list.erase(iter);
         }
-        demoList.DrawList();
-        return;
+        DrawList();
     }
-    if (inputCommand == commands[down])
-    {
-        int maxPage = demoList.MaxPageNr();
-        int currentStartingRow = demoList.GetStartingRow();
-        int currentRenderLimit = demoList.GetRowRenderLimit();
-        int currentPage = demoList.GetPage();
-        if (currentPage < maxPage)
-        {
-            demoList.SetStartingRow(currentStartingRow + currentRenderLimit);
-            demoList.SetPage(currentPage + 1);
-        }
-        demoList.DrawList();
-        return;
-    }
-    if (inputCommand == commands[draw])
-    {
-        demoList.ResetParams();
-        demoList.DrawList();
-        return;
-    }
-    if (inputCommand == commands[clearList])
-    {
-        demoList.ClearList();
-        demoList.DrawList();
-        return;
-    }
-    if (inputCommand == commands[setViewRange])
-    {
-        int numberofrows;
-        cout << "number of rows: ";
-        cin >> numberofrows;
-        demoList.setRowRenderLimit(numberofrows);
-        demoList.DrawList();
-        return;
-    }
-    if (inputCommand == commands[addRow])
+    void AddRow()
     {
         bool loop = true;
-        int previousMaxPage = demoList.MaxPageNr();
+        int previousMaxPage = MaxPageNr();
         while (loop)
         {
             string content;
             cout << "content: ";
             cin.ignore();
             getline(cin, content);
-            demoList.AddRow(content);
-            demoList.DrawList();
-            int currentMaxPage = demoList.MaxPageNr();
+            list.push_back(content);
+            DrawList();
+            int currentMaxPage = MaxPageNr();
             if (currentMaxPage > previousMaxPage)
             {
-                int maxPage = demoList.MaxPageNr();
-                int currentStartingRow = demoList.GetStartingRow();
-                int currentRenderLimit = demoList.GetRowRenderLimit();
-                int currentPage = demoList.GetPage();
-                demoList.SetStartingRow(currentStartingRow + currentRenderLimit);
-                demoList.SetPage(currentPage + 1);
-                demoList.DrawList();
+                startingRow = startingRow + rowRenderLimit;
+                page = page + 1;
+                DrawList();
             }
             cout << endl;
 
@@ -267,66 +210,119 @@ void commandHandling()
             {
                 loop = false;
             }
-            demoList.DrawList();
+            DrawList();
             cout << endl;
         }
+    }
+    void SetRowRenderLimit(int rows)
+    {
+        ResetParams();
+        rowRenderLimit = rows;
+    }
+    void SetViewRange()
+    {
+        int numberofrows;
+        cout << "number of rows: ";
+        cin >> numberofrows;
+        SetRowRenderLimit(numberofrows);
+        DrawList();
+    }
+    void previousPage()
+    {
+        if (page > 1)
+        {
+            startingRow = startingRow - rowRenderLimit;
+            page = page - 1;
+        }
+        DrawList();
+    }
+    void nextPage()
+    {
+        if (page < MaxPageNr())
+        {
+            page = page + 1;
+            startingRow = startingRow + rowRenderLimit;
+        }
+        DrawList();
+    }
+};
+
+void commandHandling(CustomizableList list1)
+{
+    string inputCommand = "";
+    PrintConsoleText("please type in your command:", defaultTextColor);
+    SetConsoleTextColor(blue);
+    cin >> inputCommand;
+    SetConsoleTextColor(defaultTextColor);
+    cout << endl;
+
+    if (inputCommand == commands[up])
+    {
+        list1.previousPage();
+        return;
+    }
+    if (inputCommand == commands[down])
+    {
+        list1.nextPage();
+        return;
+    }
+    if (inputCommand == commands[draw])
+    {
+        list1.ResetParams();
+        list1.DrawList();
+        return;
+    }
+    if (inputCommand == commands[clearList])
+    {
+        list1.ClearList();
+        return;
+    }
+    if (inputCommand == commands[setViewRange])
+    {
+        list1.SetViewRange();
+        return;
+    }
+    if (inputCommand == commands[addRow])
+    {
+        list1.AddRow();
         return;
     }
     if (inputCommand == commands[editRow])
     {
-        int row;
-        string content;
-        cout << "row number: ";
-        cin >> row;
-        cout << "content: ";
-        cin.ignore();
-        getline(cin, content);
-        demoList.SetRowContent(row, content);
-        demoList.DrawList();
+        list1.EditRow();
         return;
     }
     if (inputCommand == commands[loadDemoData])
     {
-        demoList.ClearList();
-        demoList.SetDemoData();
-        demoList.DrawList();
+        list1.LoadDemoData();
         return;
     }
     if (inputCommand == commands[help])
     {
-        clearConsole();
-        cout << "here are all valid commands:" << endl;
-        SetConsoleTextAttribute(hConsole, 14);
-        for (int i = 0; i < ((sizeof(commands) / sizeof(commands[0]))); i++)
-        {
-            cout << commands[i] << endl;
-        }
-        SetConsoleTextAttribute(hConsole, defaultTextColor);
+        PrintVailidCommands();
         return;
     }
     if (inputCommand == commands[quit])
     {
-        SetConsoleTextAttribute(hConsole, 10);
-        cout << "press any key to close console" << endl;
-        SetConsoleTextAttribute(hConsole, defaultTextColor);
-        exit(1);
+        CloseConsole();
         return;
     }
     //since no if-statement was correct its a invalid command
-    SetConsoleTextAttribute(hConsole, 12);
-    cout << "'" << inputCommand << "' " << "is a invalid command" << endl;
-    SetConsoleTextAttribute(hConsole, defaultTextColor);
+    string errorMsg = "'" + inputCommand + "' is a invalid command";
+    PrintConsoleText(errorMsg, red);
 }
 
 int main()
 {
-    demoList.SetDemoData();
+    CustomizableList demoList;
+
+    demoList.LoadDemoData();
     demoList.DrawList();
     cout << endl;
 
     while (true)
     {
-        commandHandling();
+        commandHandling(demoList);
         cout << endl;
     }
 }
