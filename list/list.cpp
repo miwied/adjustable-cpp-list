@@ -1,3 +1,8 @@
+/*
+miwied - adjustable-cpp-list - may 2022
+https://github.com/miwied/adjustable-cpp-list
+*/
+
 #include <iostream>
 #include <list>
 #include <string>
@@ -72,7 +77,7 @@ void PrintVailidCommands()
     }
 }
 
-class CustomizableList
+class AdjustableList
 {
 private:
     list<string> list;
@@ -81,7 +86,7 @@ private:
     int page;
     int rowIndex;
 public:
-    CustomizableList()
+    AdjustableList()
     {
         //default parameters
         rowRenderLimit = ceil(4);
@@ -254,9 +259,9 @@ public:
     }
 };
 
-CustomizableList demoList;
+AdjustableList demoList;
 
-void commandHandling()
+void CommandHandling()
 {
     string inputCommand = "";
     PrintConsoleText("please type in your command:", defaultTextColor);
@@ -329,7 +334,7 @@ int main()
 
     while (true)
     {
-        commandHandling();
+        CommandHandling();
         cout << endl;
     }
 }
