@@ -76,7 +76,7 @@ void CloseConsole()
 }
 
 // prints the whole commands[] array
-void PrintVailidCommands()
+void PrintValidCommands()
 {
     ClearConsole();
     PrintConsoleText("here are all valid commands:", defaultTextColor);
@@ -330,7 +330,7 @@ void CommandHandling(AdjustableList* list)
     }
     if (inputCommand == commands[help])
     {
-        PrintVailidCommands();
+        PrintValidCommands();
         return;
     }
     if (inputCommand == commands[quit])
