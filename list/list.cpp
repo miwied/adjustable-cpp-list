@@ -9,7 +9,9 @@ https://github.com/miwied/adjustable-cpp-list
 #include <windows.h>
 using namespace std;
 
+// console handle for text-color use
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
 // colors for console text
 short defaultTextColor = 7; // (grey)
 short red = 12;
@@ -17,6 +19,7 @@ short yellow = 14;
 short blue = 3;
 short green = 10;
 
+// commands as string
 string commands[10] =
 {
     "help",
@@ -30,6 +33,7 @@ string commands[10] =
     "loadDemoData",
     "quit"
 };
+// commands as enum (for easier use of the arrarys-index in the program)
 enum commandsMapping
 {
     help,
@@ -49,6 +53,7 @@ void SetConsoleTextColor(int color)
     SetConsoleTextAttribute(hConsole, color);
 }
 
+//  print text to console + reset color
 void PrintConsoleText(string text, int color)
 {
     SetConsoleTextColor(color);
@@ -56,17 +61,20 @@ void PrintConsoleText(string text, int color)
     SetConsoleTextColor(defaultTextColor);
 }
 
+// clear everything on the console
 void ClearConsole()
 {
     system("cls");
 }
 
+// exit / close console
 void CloseConsole()
 {
     PrintConsoleText("press any key to close console", green);
     exit(1);
 }
 
+// prints the whole commands[] array
 void PrintVailidCommands()
 {
     ClearConsole();
@@ -80,26 +88,26 @@ void PrintVailidCommands()
 class AdjustableList
 {
 private:
-    list<string> list;
-    double rowRenderLimit;
-    int startingRow;
-    int page;
-    int rowIndex;
+    list<string> list; // creating a object of the std::list class
+    double rowRenderLimit; // adjustable row render limit
+    int startingRow; // is used to change the pages
+    int page; // for page display and calculation of the row index 
+    int rowIndex; // index which is printed at the beginning of the line
 public:
-    AdjustableList()
-    {
-        //default parameters
-        rowRenderLimit = ceil(4);
-        startingRow = 0;
-        page = 1;
-        rowIndex = 1;
-    }
+    // default parameters
     void ResetParams()
     {
         startingRow = 0;
         page = 1;
         rowIndex = 1;
     }
+    // inital parameters
+    AdjustableList()
+    {
+        rowRenderLimit = ceil(4); 
+        ResetParams();
+    }
+    // returns the maximum page number according to the size of the list & row-render 
     int MaxPageNr()
     {
         double result = list.size() / rowRenderLimit;
@@ -116,35 +124,38 @@ public:
     void DrawList()
     {
         ClearConsole();
-        cout << "page: " << page << "/" << to_string(MaxPageNr()) << endl;
+        cout << "page: " << page << "/" << to_string(MaxPageNr()) << endl; // page: x / x
         cout << endl;
 
-        cout << "/\\ " << endl;
+        cout << "/\\ " << endl; // up arrow
 
-        auto row = list.begin();
+        auto row = list.begin(); // start of the list
         if (startingRow <= list.size())
         {
-            advance(row, startingRow);
+            advance(row, startingRow); // page change
         }
         UpdateFirstRowIndex();
         for (int i = 0; i < rowRenderLimit; i++)
         {
+            // print row number + "---" if view range is bigger then list
             if (row == list.end())
             {
                 cout << "R" << rowIndex << ": " << "---" << endl;
             }
+            // prints rows with corresponding list-content
             else
             {
-                const string& ref = *row;
+                const string& ref = *row; // pointer to the (first) row of the list
                 string copy = *row;
                 cout << "R" << rowIndex << ": " << ref << endl;
-                row++;
+                row++; // go to the next row of the list
             }
             rowIndex++;
         }
 
-        cout << "\\/" << endl;
+        cout << "\\/" << endl; // down arrow
     }
+    // list reset
     void ClearList()
     {
         ResetParams();
@@ -155,7 +166,7 @@ public:
     {
         ResetParams();
         ClearList();
-        //just some demo data
+        // demo data
         list.push_back("red");
         list.push_back("green");
         list.push_back("blue");
@@ -187,11 +198,12 @@ public:
         advance(iter, (row - 1));
         if ((row - 1) <= list.size())
         {
-            list.insert(iter, content);
-            list.erase(iter);
+            list.insert(iter, content); // insert new content
+            list.erase(iter); // delete old content
         }
         DrawList();
     }
+    // adds row at the bottom of the list
     void AddRow()
     {
         bool loop = true;
@@ -204,18 +216,22 @@ public:
             SetConsoleTextColor(blue);
             cin.ignore();
             getline(cin, content);
-            list.push_back(content);
+            list.push_back(content); // add the content to the bottom (end) of the list
             SetConsoleTextColor(defaultTextColor);
             DrawList();
             int currentMaxPage = MaxPageNr();
+
+            // go to the next page if the end of the list is reached
             if (currentMaxPage > previousMaxPage)
             {
                 startingRow = startingRow + rowRenderLimit;
                 page = page + 1;
                 DrawList();
             }
+
             cout << endl;
 
+            // 'add another row' - loop
             string input;
             cout << "add another row? (y/n): ";
             cin >> input;
@@ -239,7 +255,7 @@ public:
         rowRenderLimit = numberofrows;
         DrawList();
     }
-    void previousPage()
+    void PreviousPage()
     {
         if (page > 1)
         {
@@ -248,7 +264,7 @@ public:
         }
         DrawList();
     }
-    void nextPage()
+    void NextPage()
     {
         if (page < MaxPageNr())
         {
@@ -259,9 +275,7 @@ public:
     }
 };
 
-AdjustableList demoList;
-
-void CommandHandling()
+void CommandHandling(AdjustableList *list)
 {
     string inputCommand = "";
     PrintConsoleText("please type in your command:", defaultTextColor);
@@ -270,45 +284,47 @@ void CommandHandling()
     SetConsoleTextColor(defaultTextColor);
     cout << endl;
 
+    // check if the entered line is a valid command (if so: call the corresponding method)
+
     if (inputCommand == commands[up])
     {
-        demoList.previousPage();
+        list->PreviousPage();
         return;
     }
     if (inputCommand == commands[down])
     {
-        demoList.nextPage();
+        list->NextPage();
         return;
     }
     if (inputCommand == commands[draw])
     {
-        demoList.ResetParams();
-        demoList.DrawList();
+        list->ResetParams();
+        list->DrawList();
         return;
     }
     if (inputCommand == commands[clearList])
     {
-        demoList.ClearList();
+        list->ClearList();
         return;
     }
     if (inputCommand == commands[setViewRange])
     {
-        demoList.SetViewRange();
+        list->SetViewRange();
         return;
     }
     if (inputCommand == commands[addRow])
     {
-        demoList.AddRow();
+        list->AddRow();
         return;
     }
     if (inputCommand == commands[editRow])
     {
-        demoList.EditRow();
+        list->EditRow();
         return;
     }
     if (inputCommand == commands[loadDemoData])
     {
-        demoList.LoadDemoData();
+        list->LoadDemoData();
         return;
     }
     if (inputCommand == commands[help])
@@ -321,20 +337,24 @@ void CommandHandling()
         CloseConsole();
         return;
     }
-    //since no if-statement was correct its a invalid command
+
+    // since no if-statement was correct its a invalid command
     string errorMsg = "'" + inputCommand + "' is a invalid command";
     PrintConsoleText(errorMsg, red);
 }
 
 int main()
 {
+    AdjustableList demoList;
+    // draw list with demo data at the beginning of the programm
     demoList.LoadDemoData();
     demoList.DrawList();
     cout << endl;
 
+    // command handling loop
     while (true)
     {
-        CommandHandling();
+        CommandHandling(&demoList); // pass the (address of the) AdjustableList-object to the handling function
         cout << endl;
     }
 }
