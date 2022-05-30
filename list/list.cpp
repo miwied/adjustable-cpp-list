@@ -6,6 +6,7 @@ https://github.com/miwied/adjustable-cpp-list
 #include <iostream>
 #include <list>
 #include <string>
+#include <cmath>
 #include <windows.h>
 using namespace std;
 
@@ -104,7 +105,7 @@ public:
     // inital parameters
     AdjustableList()
     {
-        rowRenderLimit = ceil(4); 
+        rowRenderLimit = ceil(4);
         ResetParams();
     }
     // returns the maximum page number according to the size of the list & row-render 
@@ -124,12 +125,12 @@ public:
     void DrawList()
     {
         ClearConsole();
-        cout << "page: " << page << "/" << to_string(MaxPageNr()) << endl; // page: x / x
+        cout << "page: " << page << "/" << MaxPageNr() << endl; // page: x / x
         cout << endl;
 
         cout << "/\\ " << endl; // up arrow
 
-        auto row = list.begin(); // start of the list
+        std::list<std::string>::iterator row = list.begin(); // start of the list
         if (startingRow <= list.size())
         {
             advance(row, startingRow); // page change
@@ -275,7 +276,7 @@ public:
     }
 };
 
-void CommandHandling(AdjustableList *list)
+void CommandHandling(AdjustableList* list)
 {
     string inputCommand = "";
     PrintConsoleText("please type in your command:", defaultTextColor);
