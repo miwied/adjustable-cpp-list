@@ -130,7 +130,7 @@ public:
 
         cout << "/\\ " << endl; // up arrow
 
-        std::list<std::string>::iterator row = list.begin(); // start of the list
+        std::list<string>::iterator row = list.begin(); // start of the list
         if (startingRow <= list.size())
         {
             advance(row, startingRow); // page change
@@ -147,7 +147,6 @@ public:
             else
             {
                 const string& ref = *row; // pointer to the (first) row of the list
-                string copy = *row;
                 cout << "R" << rowIndex << ": " << ref << endl;
                 row++; // go to the next row of the list
             }
