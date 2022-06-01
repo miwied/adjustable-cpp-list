@@ -131,7 +131,7 @@ public:
         cout << "/\\ " << endl; // up arrow
 
         std::list<string>::iterator row = list.begin(); // start of the list
-        if (startingRow <= list.size())
+        if (startingRow < list.size())
         {
             advance(row, startingRow); // page change
         }
